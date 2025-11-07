@@ -69,14 +69,6 @@ func abs(x int) int {
 	return x
 }
 
-// max 返回两个整数中的较大值
-func max(a, b int) int {
-	if a > b {
-		return a
-	}
-	return b
-}
-
 // CreateAnimationPlan 计算源图像到目标图像的像素移动路径
 func CreateAnimationPlan(sourceImg, targetImg image.Image) *AnimationPlan {
 	sourcePixels := imageToPixels(sourceImg)
