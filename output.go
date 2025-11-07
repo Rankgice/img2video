@@ -6,6 +6,7 @@ import (
 	"image/color/palette"
 	"image/draw"
 	"image/gif"
+	"image/jpeg"
 	"image/png"
 	"log"
 	"os"
@@ -63,39 +64,31 @@ func SaveGIF(plan *AnimationPlan, outputPath string, delay int) error {
 	return gif.EncodeAll(outputFile, g)
 }
 
-// SaveFrames 将动画的每一帧保存为单独的 PNG 图片
-func SaveFrames(plan *AnimationPlan, outputDir string) error {
-	if err := os.MkdirAll(outputDir, 0755); err != nil {
-		return fmt.Errorf("创建帧输出目录 %s 时出错: %w", outputDir, err)
+// SaveImage 根据 AnimationPlan 生成并保存最终的重排图像
+func SaveImage(plan *AnimationPlan, outputPath string) error {
+	log.Printf("正在生成最终的重排图像...")
+
+	finalImage := image.NewRGBA(plan.Bounds)
+
+	for _, ap := range plan.Pixels {
+		// 在最后一帧，所有像素都应在其目标位置
+		finalImage.Set(ap.TargetX, ap.TargetY, ap.Color)
 	}
 
-	log.Printf("正在将 %d 帧保存到目录 %s...", plan.Frames, outputDir)
-
-	for frameNum := 0; frameNum < plan.Frames; frameNum++ {
-		currentFrameRGBA := image.NewRGBA(plan.Bounds)
-
-		for _, ap := range plan.Pixels {
-			currentX, currentY := calculatePixelPosition(ap, frameNum)
-			currentFrameRGBA.Set(currentX, currentY, ap.Color)
-		}
-
-		framePath := filepath.Join(outputDir, fmt.Sprintf("frame_%05d.png", frameNum))
-		file, err := os.Create(framePath)
-		if err != nil {
-			return fmt.Errorf("创建帧文件 %s 时出错: %w", framePath, err)
-		}
-
-		err = png.Encode(file, currentFrameRGBA)
-		file.Close() // 确保文件在检查错误前关闭
-		if err != nil {
-			return fmt.Errorf("编码帧 %s 时出错: %w", framePath, err)
-		}
-
-		if frameNum%(plan.Frames/10+1) == 0 {
-			log.Printf("已保存帧 %d/%d", frameNum, plan.Frames-1)
-		}
+	file, err := os.Create(outputPath)
+	if err != nil {
+		return fmt.Errorf("创建输出文件 %s 时出错: %w", outputPath, err)
 	}
-	return nil
+	defer file.Close()
+
+	log.Printf("正在将图像编码到 %s...", outputPath)
+	// 根据文件扩展名选择编码器，默认为 PNG
+	ext := filepath.Ext(outputPath)
+	if ext == ".jpg" || ext == ".jpeg" {
+		// 可以为 JPEG 设置质量选项
+		return jpeg.Encode(file, finalImage, nil)
+	}
+	return png.Encode(file, finalImage)
 }
 
 // calculatePixelPosition 计算像素在特定帧的当前位置

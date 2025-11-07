@@ -30,8 +30,8 @@ func main() {
 	// 更新使用说明
 	if len(os.Args) < 5 {
 		fmt.Printf("Usage: %s <source_image> <target_image> <output_type> <output_path> [delay]\n", os.Args[0])
-		fmt.Println("  output_type: 'gif' or 'frames'")
-		fmt.Println("  output_path: path for the output file (for gif) or directory (for frames)")
+		fmt.Println("  output_type: 'gif' or 'image'")
+		fmt.Println("  output_path: path for the output file (e.g., animation.gif, result.png)")
 		fmt.Println("  delay (for gif): optional, frame delay in 1/100s of a second (default: 1)")
 		os.Exit(1)
 	}
@@ -76,14 +76,14 @@ func main() {
 			log.Fatalf("Error saving GIF: %v", err)
 		}
 		log.Println("GIF animation created successfully!")
-	case "frames":
-		log.Println("Saving animation as individual frames...")
-		err := SaveFrames(plan, outputPath)
+	case "image":
+		log.Println("Saving final image...")
+		err := SaveImage(plan, outputPath)
 		if err != nil {
-			log.Fatalf("Error saving frames: %v", err)
+			log.Fatalf("Error saving image: %v", err)
 		}
-		log.Printf("Frames saved successfully to directory: %s", outputPath)
+		log.Printf("Image saved successfully to: %s", outputPath)
 	default:
-		log.Fatalf("Unknown output type: %s. Please use 'gif' or 'frames'.", outputType)
+		log.Fatalf("Unknown output type: %s. Please use 'gif' or 'image'.", outputType)
 	}
 }
