@@ -87,22 +87,6 @@ func imageToPixels(img image.Image) []Pixel {
 	return pixels
 }
 
-// abs 返回整数的绝对值
-func abs(x int) int {
-	if x < 0 {
-		return -x
-	}
-	return x
-}
-
-// max 返回两个整数中的较大值
-func max(a, b int) int {
-	if a > b {
-		return a
-	}
-	return b
-}
-
 // calculatePlan 是一个辅助函数，用于根据排序后的像素列表计算动画计划
 func calculatePlan(sourcePixels []Pixel, targetPixels []PixelFeatured, bounds image.Rectangle) *AnimationPlan {
 	var animationPixels []AnimationPixel
