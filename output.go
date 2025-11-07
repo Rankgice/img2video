@@ -63,16 +63,16 @@ func SaveGIF(plan *AnimationPlan, outputPath string, delay int) error {
 				dy := ap.TargetY - state.Y
 
 				// 根据图片尺寸计算缩放因子
-				scaleX := float64(plan.Bounds.Dx()) / 200.0
-				scaleY := float64(plan.Bounds.Dy()) / 200.0
+				scaleX := float64(plan.Bounds.Dx()) / 150.0
+				scaleY := float64(plan.Bounds.Dy()) / 150.0
 
 				// 获取基础随机步长 (1-3)
 				baseStepX := rand.Intn(3) + 1
 				baseStepY := rand.Intn(3) + 1
 
 				// 计算最终步长，并确保至少为 1
-				stepX := max(1, int(math.Round(float64(baseStepX)*scaleX)))
-				stepY := max(1, int(math.Round(float64(baseStepY)*scaleY)))
+				stepX := max(max(1, int(scaleX)), int(math.Round(float64(baseStepX)*scaleX)))
+				stepY := max(max(1, int(scaleY), int(math.Round(float64(baseStepY)*scaleY))))
 
 				// 移动 X 轴
 				if abs(dx) <= stepX {
