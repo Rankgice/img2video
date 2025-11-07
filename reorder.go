@@ -17,9 +17,19 @@ type Pixel struct {
 // Pixels 是 Pixel 结构体的切片，用于实现 sort.Interface 接口
 type Pixels []Pixel
 
-func (p Pixels) Len() int           { return len(p) }
-func (p Pixels) Less(i, j int) bool { return p[i].GrayscaleValue < p[j].GrayscaleValue }
-func (p Pixels) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
+func (p Pixels) Len() int { return len(p) }
+func (p Pixels) Less(i, j int) bool { // 首先按灰度值排序
+	if p[i].GrayscaleValue != p[j].GrayscaleValue {
+		return p[i].GrayscaleValue < p[j].GrayscaleValue
+	}
+	// 如果灰度值相同，按绿色分量排序
+	if p[i].Color.G != p[j].Color.G {
+		return p[i].Color.G < p[j].Color.G
+	}
+	// 如果绿色分量也相同，按红色分量排序
+	return p[i].Color.R < p[j].Color.R
+}
+func (p Pixels) Swap(i, j int) { p[i], p[j] = p[j], p[i] }
 
 // AnimationPixel 存储每个像素的动画详细信息
 type AnimationPixel struct {
